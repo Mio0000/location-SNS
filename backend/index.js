@@ -3,9 +3,15 @@ const app = express();
 const port = 3001;
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+const routes = require('./routes');
+app.use('/', routes);
 
 // 投稿を保存するための配列（メモリ上）
 const posts = [];
+
+
 
 // 投稿を受け取るAPI
 app.post('/posts', (req, res) => {
@@ -31,5 +37,9 @@ app.get('/posts', (req, res) => {
 
 app.listen(port, () => {
   console.log(`サーバーが http://localhost:${port} で起動中`);
+});
+
+app.get('/', (req, res) => {
+  res.send('APIサーバーが動いています');
 });
 

@@ -1,0 +1,62 @@
+<svg width="500" height="500" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .prefecture {
+      fill: #a2d7dd;
+      stroke: #ffffff;
+      stroke-width: 2;
+      transition: fill 0.3s;
+    }
+    .prefecture:hover {
+      fill: #ffb6c1;
+    }
+  </style>
+  <g id="japan">
+    <path id="JP-01" class="prefecture" d="M513,11L481,25L456,23L441,31L439,49L425,52L446,73L432,102L456,123L479,121L514,142L540,119L569,112L569,88L538,59L529,32z" />
+    <path id="JP-02" class="prefecture" d="M473,158L456,177L452,203L481,207L481,180z" />
+    <path id="JP-05" class="prefecture" d="M451,214L435,232L436,264L452,284L468,269L467,233z" />
+    <path id="JP-03" class="prefecture" d="M485,178L485,208L501,234L486,252L488,271L474,271L473,212z" />
+    <path id="JP-06" class="prefecture" d="M453,288L437,300L448,333L468,321L469,286z" />
+    <path id="JP-07" class="prefecture" d="M470,324L450,336L452,360L493,353L491,320z" />
+    <path id="JP-04" class="prefecture" d="M489,274L476,275L478,317L492,317z" />
+    <path id="JP-11" class="prefecture" d="M468,362L454,374L467,392L484,385z" />
+    <path id="JP-10" class="prefecture" d="M449,338L432,349L426,373L451,358z" />
+    <path id="JP-13" class="prefecture" d="M486,388L469,395L473,411L494,403z" />
+    <path id="JP-12" class="prefecture" d="M496,386L496,404L513,410L510,385z" />
+    <path id="JP-15" class="prefecture" d="M424,310L400,320L405,355L425,375L446,334z" />
+    <path id="JP-14" class="prefecture" d="M474,414L453,423L468,443L488,432z" />
+    <path id="JP-08" class="prefecture" d="M495,356L514,359L511,382L495,383z" />
+    <path id="JP-09" class="prefecture" d="M470,356L492,355L493,383L469,383z" />
+    <path id="JP-22" class="prefecture" d="M451,425L425,438L429,463L452,475L466,442z" />
+    <path id="JP-20" class="prefecture" d="M424,378L401,390L412,423L432,431L448,390z" />
+    <path id="JP-19" class="prefecture" d="M450,393L434,405L435,429L450,422z" />
+    <path id="JP-21" class="prefecture" d="M399,392L380,418L410,422L409,393z" />
+    <path id="JP-23" class="prefecture" d="M423,439L396,456L408,482L427,477z" />
+    <path id="JP-16" class="prefecture" d="M398,357L378,367L385,392L402,388z" />
+    <path id="JP-17" class="prefecture" d="M376,368L351,378L361,408L382,391z" />
+    <path id="JP-18" class="prefecture" d="M359,410L338,421L355,448L378,433z" />
+    <path id="JP-25" class="prefecture" d="M379,420L357,450L380,465L394,453z" />
+    <path id="JP-24" class="prefecture" d="M381,468L359,481L380,504L406,484z" />
+    <path id="JP-26" class="prefecture" d="M355,452L331,465L356,478L377,463z" />
+    <path id="JP-29" class="prefecture" d="M354,480L332,492L357,502L378,485z" />
+    <path id="JP-28" class="prefecture" d="M329,466L301,481L308,511L330,511L354,490z" />
+    <path id="JP-27" class="prefecture" d="M329,493L309,513L331,512L352,492z" />
+    <path id="JP-30" class="prefecture" d="M330,514L307,522L332,544L355,505z" />
+    <path id="JP-33" class="prefecture" d="M299,483L273,495L280,520L305,509z" />
+    <path id="JP-31" class="prefecture" d="M299,455L270,466L275,492L300,479z" />
+    <path id="JP-32" class="prefecture" d="M268,468L240,480L247,510L273,494z" />
+    <path id="JP-34" class="prefecture" d="M271,497L243,512L254,538L278,519z" />
+    <path id="JP-35" class="prefecture" d="M238,514L210,525L226,558L252,537z" />
+    <path id="JP-37" class="prefecture" d="M303,512L282,522L288,540L308,531z" />
+    <path id="JP-36" class="prefecture" d="M307,533L287,542L296,561L316,550z" />
+    <path id="JP-38" class="prefecture" d="M280,542L258,552L268,574L294,560z" />
+    <path id="JP-39" class="prefecture" d="M285,563L262,575L276,596L297,581z" />
+    <path id="JP-40" class="prefecture" d="M224,560L196,570L208,600L234,588L248,560z" />
+    <path id="JP-41" class="prefecture" d="M194,572L178,588L193,612L206,599z" />
+    <path id="JP-44" class="prefecture" d="M236,590L210,602L222,628L245,614z" />
+    <path id="JP-42" class="prefecture" d="M176,590L150,602L168,634L191,611z" />
+    <path id="JP-43" class="prefecture" d="M208,604L184,620L200,645L220,627z" />
+    <path id="JP-45" class="prefecture" d="M224,630L202,647L218,672L240,655z" />
+    <path id="JP-46" class="prefecture" d="M216,674L192,690L213,715L238,695L238,670z" />
+    <path id="JP-47" class="prefecture" d="M150,750L130,760L140,780L160,770z" />
+  </g>
+</svg>

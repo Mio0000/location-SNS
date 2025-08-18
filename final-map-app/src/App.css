@@ -1,42 +1,49 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* アプリ全体のメインエリアを横並びにする */
+.App-main {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* 地図のコンテナ */
+.map-container {
+  position: relative; /* ★★★ これが超大事な目印！ ★★★ */
+  width: 60%;
+  max-width: 600px; /* 大きくなりすぎないように */
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* サイドバー（フォームと投稿一覧） */
+.sidebar {
+  width: 35%;
+  max-width: 400px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* 投稿一覧のスタイル */
+.post-list {
+  margin-top: 20px;
 }
 
-.card {
-  padding: 2em;
+.post-item {
+  border: 1px solid #eee;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
 }
 
-.read-the-docs {
-  color: #888;
+.post-image {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.delete-button {
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }

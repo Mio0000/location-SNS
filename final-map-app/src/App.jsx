@@ -1,12 +1,13 @@
-// /src/App.jsx
-
 import React, { useState, useEffect } from 'react';
 import JapanMap from './JapanMap.jsx';
 import PostForm from './PostForm.jsx';
+import PostDetail from './PostDetail.jsx';
 import './App.css';
+import './PostDetail.css';
 
 function App() {
   const [posts, setPosts] = useState([]);
+  const [selectedPost, setSelectedPost] = useState(null);
 
   const fetchPosts = () => {
     fetch('http://localhost:3001/posts')
@@ -35,6 +36,14 @@ function App() {
     }
   };
 
+  const handlePinClick = (post) => {
+    setSelectedPost(post);
+  };
+
+  const handleCloseDetail = () => {
+    setSelectedPost(null);
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -43,7 +52,7 @@ function App() {
       
       <main className="App-main">
         <div className="map-container">
-          <JapanMap posts={posts} />
+          <JapanMap posts={posts} onPinClick={handlePinClick} />
         </div>
 
         <div className="sidebar">
@@ -54,13 +63,13 @@ function App() {
             {posts.map(post => (
               <div key={post.id} className="post-item">
                 <p><strong>{post.address}</strong></p>
-                {/* ★★★ post.text の表示を復活 ★★★ */}
                 <p>{post.text}</p>
                 {post.image && (
                   <img
                     src={`http://localhost:3001/uploads/${post.image}`}
-                    alt={post.text} // altはtextの方が親切！
+                    alt={post.text}
                     className="post-image"
+                    onClick={() => handlePinClick(post)} // 一覧の写真もクリックできるように
                   />
                 )}
                 <button onClick={() => handleDelete(post.id)} className="delete-button">
@@ -71,6 +80,8 @@ function App() {
           </div>
         </div>
       </main>
+
+      {selectedPost && <PostDetail post={selectedPost} onClose={handleCloseDetail} />}
     </div>
   );
 }

@@ -1,9 +1,6 @@
-// /src/PostForm.jsx
-
 import React, { useState } from 'react';
 
 function PostForm({ onPostSuccess }) {
-  // ★★★ textのuseStateを復活させる ★★★
   const [text, setText] = useState('');
   const [address, setAddress] = useState('');
   const [image, setImage] = useState(null);
@@ -16,9 +13,7 @@ function PostForm({ onPostSuccess }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     const formData = new FormData();
-    // ★★★ textをFormDataに追加する処理を復活 ★★★
     formData.append('text', text);
     formData.append('address', address);
     if (image) {
@@ -33,13 +28,10 @@ function PostForm({ onPostSuccess }) {
       const result = await response.json();
       alert(result.message);
       onPostSuccess();
-
-      // ★★★ textのリセットを復活 ★★★
       setText('');
       setAddress('');
       setImage(null);
       event.target.reset();
-
     } catch (error) {
       console.error('投稿エラー:', error);
       alert('投稿に失敗しました。');
@@ -49,7 +41,6 @@ function PostForm({ onPostSuccess }) {
   return (
     <form onSubmit={handleSubmit} style={{ margin: '20px', padding: '20px', border: '1px solid #ccc' }}>
       <h3>投稿フォーム</h3>
-      {/* ★★★ テキスト入力欄を復活 ★★★ */}
       <div style={{ marginBottom: '10px' }}>
         <label>投稿テキスト： </label>
         <input type="text" value={text} onChange={(e) => setText(e.target.value)} required />

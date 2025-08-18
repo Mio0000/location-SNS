@@ -13,94 +13,69 @@ const getPrefectureFromAddress = (address) => {
   return null;
 };
 
-function JapanMap({ posts, onPinClick }) {
+// App.jsxから onPinClick を受け取らないように変更
+function JapanMap({ posts }) {
   const mapContainerRef = useRef(null);
 
   useEffect(() => {
-    if (!mapContainerRef.current || !posts || posts.length === 0) return;
+    const svgElement = mapContainerRef.current?.querySelector('svg');
+    if (!svgElement) return;
 
-    // SVGがDOMに挿入されるのを待つ
-    const observer = new MutationObserver(() => {
-        const svgElement = mapContainerRef.current.querySelector('svg');
-        if (!svgElement) return;
-
-        let defs = svgElement.querySelector('defs');
-        if (!defs) {
-            defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-            svgElement.prepend(defs);
-        }
-
-        // 投稿に基づいてSVG内のパスを塗りつぶす
-        posts.forEach(post => {
-            const prefectureName = getPrefectureFromAddress(post.address);
-            if (!prefectureName) return;
-
-            const prefectureId = PREFECTURE_NAME_TO_ID[prefectureName];
-            const prefectureElement = svgElement.querySelector(`#${prefectureId}`);
-            if (prefectureElement) {
-                // パターンを動的に作成
-                const patternId = `pattern-${post.id}`;
-                const pattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
-                pattern.setAttribute('id', patternId);
-                pattern.setAttribute('x', '0');
-                pattern.setAttribute('y', '0');
-                pattern.setAttribute('width', '100%');
-                pattern.setAttribute('height', '100%');
-                pattern.setAttribute('viewBox', '0 0 1 1');
-                pattern.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-
-                const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-                image.setAttribute('href', `http://localhost:3001/uploads/${post.image}`);
-                image.setAttribute('x', '0');
-                image.setAttribute('y', '0');
-                image.setAttribute('width', '1');
-                image.setAttribute('height', '1');
-                image.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-
-                pattern.appendChild(image);
-                defs.appendChild(pattern);
-
-                // パスをパターンで塗りつぶし、イベントリスナーを追加
-                prefectureElement.style.fill = `url(#${patternId})`;
-                prefectureElement.style.cursor = 'pointer';
-
-                // 重複して追加されないように注意
-                prefectureElement.onclick = () => onPinClick(post);
-            }
-        });
-
-        observer.disconnect();
+    // 前の投稿の画像をリセットするために、一度すべての色を元に戻す
+    svgElement.querySelectorAll('path').forEach(path => {
+      path.style.fill = '';
+      path.style.cursor = 'default';
     });
 
-    observer.observe(mapContainerRef.current, { childList: true });
+    let defs = svgElement.querySelector('defs');
+    if (!defs) {
+        defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        svgElement.prepend(defs);
+    }
+    // 古いパターン定義をクリア
+    defs.innerHTML = '';
 
-    // コンポーネントがアンマウントされたらイベントリスナーをクリーンアップ
-    return () => {
-        const svgElement = mapContainerRef.current?.querySelector('svg');
-        if (svgElement) {
-            posts.forEach(post => {
-                const prefectureName = getPrefectureFromAddress(post.address);
-                if (prefectureName) {
-                    const prefectureId = PREFECTURE_NAME_TO_ID[prefectureName];
-                    const prefectureElement = svgElement.querySelector(`#${prefectureId}`);
-                    if (prefectureElement) {
-                        prefectureElement.onclick = null;
-                    }
-                }
-            });
+    // 新しい投稿に基づいてSVG内のパスを写真で塗りつぶす
+    posts.forEach(post => {
+        if (!post.image) return;
+        const prefectureName = getPrefectureFromAddress(post.address);
+        if (!prefectureName) return;
+
+        const prefectureId = PREFECTURE_NAME_TO_ID[prefectureName];
+        const prefectureElement = svgElement.querySelector(`#${prefectureId}`);
+
+        if (prefectureElement) {
+            const patternId = `pattern-${post.id}`;
+            const pattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
+            pattern.setAttribute('id', patternId);
+            pattern.setAttribute('patternContentUnits', 'objectBoundingBox');
+            pattern.setAttribute('width', '1');
+            pattern.setAttribute('height', '1');
+
+            const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+            image.setAttribute('href', `http://localhost:3001/uploads/${post.image}`);
+            image.setAttribute('x', '0');
+            image.setAttribute('y', '0');
+            image.setAttribute('width', '1');
+            image.setAttribute('height', '1');
+            image.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+
+            pattern.appendChild(image);
+            defs.appendChild(pattern);
+
+            prefectureElement.style.fill = `url(#${patternId})`;
+            prefectureElement.style.cursor = 'pointer';
         }
-        observer.disconnect();
-    };
-  }, [posts, onPinClick]);
+    });
+  }, [posts]);
 
+  // onClickイベントの処理はApp.jsxに任せるので、ここでは何もしない
   return (
-    <div style={{ position: 'relative' }}>
-      <div 
-        ref={mapContainerRef} 
-        dangerouslySetInnerHTML={{ __html: JapanSvg }} 
-        style={{ width: '100%', height: 'auto' }} 
-      />
-    </div>
+    <div
+      ref={mapContainerRef}
+      dangerouslySetInnerHTML={{ __html: JapanSvg }}
+      style={{ width: '100%', height: 'auto' }}
+    />
   );
 }
 

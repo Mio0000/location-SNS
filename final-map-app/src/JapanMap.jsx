@@ -103,7 +103,7 @@ function JapanMap({ posts, onPinClick }) {
                 key={prefectureId}
                 id={prefectureId}
                 className="prefecture"
-                d={JAPAN_MAP_PATHS[prefectureId]}
+                d={JAPAN_MAP_PATHS[prefectureId]} // パスデータをオブジェクトから取得
                 fill={post ? `url(#pattern-${post.id})` : '#a2d7dd'}
                 style={{ stroke: 'white', strokeWidth: 2 }}
                 onClick={() => {

@@ -1,9 +1,103 @@
-.App { text-align: center; }
-.App-header { background-color: #f8f9fa; padding: 20px; border-bottom: 1px solid #dee2e6; }
-.App-main { display: flex; justify-content: center; gap: 20px; padding: 20px; align-items: flex-start; }
-.map-container { position: relative; width: 60%; max-width: 600px; }
-.sidebar { width: 35%; max-width: 400px; }
-.post-list { margin-top: 20px; text-align: left; }
-.post-item { border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
-.post-image { width: 100%; height: auto; border-radius: 5px; margin-top: 10px; cursor: pointer; }
-.delete-button { margin-top: 10px; padding: 5px 10px; background-color: #ff4d4d; color: white; border: none; border-radius: 5px; cursor: pointer; }
+/* アプリ全体のレイアウト */
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 20px;
+}
+
+.App-main {
+  display: flex;
+  justify-content: center;
+  gap: 30px; /* 地図とサイドバーの間隔 */
+  padding: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap; /* 画面が狭い時に折り返す */
+}
+
+/* 地図のコンテナ */
+.map-container {
+  position: relative;
+  width: 60%;
+  max-width: 600px;
+}
+
+/* サイドバー（フォームと投稿一覧） */
+.sidebar {
+  width: 35%;
+  max-width: 400px;
+  min-width: 300px; /* 最小幅 */
+}
+
+/* 投稿一覧 */
+.post-list {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.post-item {
+  border: 1px solid #eee;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.post-image {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+/* いいねボタンと削除ボタンのエリア */
+.post-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.like-button {
+  padding: 5px 12px;
+  background-color: white;
+  color: black;
+  border: 1px solid #f8bbd0;
+  border-radius: 20px; /* 丸みをつける */
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.like-button:hover {
+  background-color: #f8bbd0;
+}
+
+.delete-button {
+  padding: 5px 12px;
+  background-color: white;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+  border-radius: 20px; /* 丸みをつける */
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+  background-color: #ef9a9a;
+}
+
+/* ... (前のCSSはそのまま) ... */
+
+/* ★★★ この部分を追加！ ★★★ */
+.like-button.liked {
+  background-color: #c2185b; /* 濃いピンク */
+  color: white;
+  border-color: #c2185b;
+}

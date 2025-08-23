@@ -1,0 +1,65 @@
+/* モーダルの背景 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+}
+
+/* モーダル本体 */
+.modal {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border: 1px solid #ccc;
+  padding: 1em;
+  z-index: 1000;
+  width: 300px;
+  max-width: 90%;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* コメント一覧 */
+.comments-list {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+  border-radius: 4px;
+  background: #f9f9f9;
+}
+
+/* 入力欄 */
+.modal input {
+  width: calc(100% - 1em);
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* ボタン */
+.modal button {
+  margin-right: 0.5em;
+  padding: 0.5em 1em;
+  border: none;
+  background: #007BFF;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal button:last-child {
+  background: #6c757d;
+}
+
+.modal button:hover {
+  opacity: 0.9;
+}

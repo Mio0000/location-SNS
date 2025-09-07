@@ -26,7 +26,12 @@ const upload = multer({ storage: storage });
 const loadPosts = () => {
     if (fs.existsSync(postsFilePath)) {
         const data = fs.readFileSync(postsFilePath, 'utf8');
-        return JSON.parse(data);
+        try {
+            return JSON.parse(data);
+        } catch (e) {
+            console.error('Error parsing posts.json:', e);
+            return [];
+        }
     }
     return [];
 };
@@ -36,7 +41,6 @@ const savePosts = (posts) => {
 };
 
 // --- 2. ミドルウェアの設定（重要）---
-// すべてのエンドポイントの前に配置する
 router.use(cors());
 router.use('/uploads', express.static(uploadsDir));
 router.use(express.json());
@@ -44,11 +48,14 @@ router.use(express.urlencoded({ extended: true }));
 
 
 // --- 3. APIエンドポイントの定義 ---
+
+// すべての投稿を取得
 router.get('/posts', (req, res) => {
     const posts = loadPosts();
     res.json(posts);
 });
 
+// 新しい投稿を追加
 router.post('/posts', upload.single('image'), (req, res) => {
     const { text, address } = req.body;
     const image = req.file ? req.file.filename : null;
@@ -60,14 +67,14 @@ router.post('/posts', upload.single('image'), (req, res) => {
         address,
         image,
         likes: 0,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
     };
     posts.unshift(newPost);
     savePosts(posts);
-
-    res.status(201).json(newPost);
+    res.status(201).json({ message: '投稿が成功しました', post: newPost });
 });
 
+// いいね！を追加
 router.post('/posts/:id/like', (req, res) => {
     const postId = req.params.id;
     const posts = loadPosts();
@@ -76,21 +83,22 @@ router.post('/posts/:id/like', (req, res) => {
     if (postIndex === -1) {
         return res.status(404).json({ message: '投稿が見つかりません。' });
     }
-    
+
     posts[postIndex].likes = (posts[postIndex].likes || 0) + 1;
     savePosts(posts);
-
     res.status(200).json(posts[postIndex]);
 });
 
+// 投稿を削除
 router.delete('/posts/:id', (req, res) => {
     const postId = req.params.id;
-    let posts = loadPosts();
+    const posts = loadPosts();
     const initialLength = posts.length;
-    posts = posts.filter(p => p.id !== postId);
+    
+    const updatedPosts = posts.filter(p => p.id !== postId);
 
-    if (posts.length < initialLength) {
-        savePosts(posts);
+    if (updatedPosts.length < initialLength) {
+        savePosts(updatedPosts);
         return res.status(200).json({ message: '投稿を削除しました。' });
     }
     res.status(404).json({ message: '投稿が見つかりません。' });

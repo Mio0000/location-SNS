@@ -25,13 +25,24 @@ function PostForm({ onPostSuccess }) {
         method: 'POST',
         body: formData,
       });
+
       const result = await response.json();
-      alert(result.message);
-      onPostSuccess();
-      setText('');
-      setAddress('');
-      setImage(null);
-      event.target.reset();
+
+     if (response.ok) {
+        alert(result.message);
+        
+        // 投稿成功後、親コンポーネントに成功を通知
+        onPostSuccess();
+        
+        // フォームの状態をクリア
+        setText('');
+        setAddress('');
+        setImage(null);
+        event.target.reset(); // ファイル選択フィールドをリセット
+      } else {
+        const result = await response.json();
+        alert(result.message || '投稿に失敗しました。');
+      }
     } catch (error) {
       console.error('投稿エラー:', error);
       alert('投稿に失敗しました。');

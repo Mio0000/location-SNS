@@ -1,4 +1,6 @@
 import React from 'react';
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+
 
 // すべての都道府県のパスデータをオブジェクトとして定義
 const JAPAN_MAP_PATHS = {
@@ -76,6 +78,57 @@ const PREFECTURE_NAME_TO_ID = {
   '熊本県': 'JP-43', '大分県': 'JP-44', 
   '宮崎県': 'JP-45', '鹿児島県': 'JP-46', '沖縄県': 'JP-47'
 };
+// ここに PREFECTURE_CENTERS オブジェクトを追加
+const PREFECTURE_CENTERS = {
+  'JP-01': { x: 500, y: 100 }, // 北海道
+  'JP-02': { x: 470, y: 190 }, // 青森県
+  'JP-03': { x: 480, y: 240 }, // 岩手県
+  'JP-04': { x: 490, y: 290 }, // 宮城県
+  'JP-05': { x: 440, y: 250 }, // 秋田県
+  'JP-06': { x: 450, y: 310 }, // 山形県
+  'JP-07': { x: 470, y: 340 }, // 福島県
+  'JP-08': { x: 500, y: 370 }, // 茨城県
+  'JP-09': { x: 480, y: 370 }, // 栃木県
+  'JP-10': { x: 440, y: 350 }, // 群馬県
+  'JP-11': { x: 460, y: 380 }, // 埼玉県
+  'JP-12': { x: 500, y: 390 }, // 千葉県
+  'JP-13': { x: 480, y: 400 }, // 東京都
+  'JP-14': { x: 470, y: 430 }, // 神奈川県
+  'JP-15': { x: 410, y: 340 }, // 新潟県
+  'JP-16': { x: 390, y: 370 }, // 富山県
+  'JP-17': { x: 370, y: 390 }, // 石川県
+  'JP-18': { x: 360, y: 430 }, // 福井県
+  'JP-19': { x: 440, y: 410 }, // 山梨県
+  'JP-20': { x: 420, y: 390 }, // 長野県
+  'JP-21': { x: 400, y: 420 }, // 岐阜県
+  'JP-22': { x: 440, y: 450 }, // 静岡県
+  'JP-23': { x: 410, y: 460 }, // 愛知県
+  'JP-24': { x: 390, y: 480 }, // 三重県
+  'JP-25': { x: 380, y: 450 }, // 滋賀県
+  'JP-26': { x: 360, y: 470 }, // 京都府
+  'JP-27': { x: 340, y: 490 }, // 大阪府
+  'JP-28': { x: 320, y: 480 }, // 兵庫県
+  'JP-29': { x: 350, y: 500 }, // 奈良県
+  'JP-30': { x: 330, y: 530 }, // 和歌山県
+  'JP-31': { x: 290, y: 470 }, // 鳥取県
+  'JP-32': { x: 260, y: 480 }, // 島根県
+  'JP-33': { x: 280, y: 500 }, // 岡山県
+  'JP-34': { x: 260, y: 520 }, // 広島県
+  'JP-35': { x: 230, y: 540 }, // 山口県
+  'JP-36': { x: 300, y: 550 }, // 徳島県
+  'JP-37': { x: 290, y: 530 }, // 香川県
+  'JP-38': { x: 270, y: 560 }, // 愛媛県
+  'JP-39': { x: 280, y: 580 }, // 高知県
+  'JP-40': { x: 220, y: 580 }, // 福岡県
+  'JP-41': { x: 190, y: 600 }, // 佐賀県
+  'JP-42': { x: 170, y: 610 }, // 長崎県
+  'JP-43': { x: 200, y: 630 }, // 熊本県
+  'JP-44': { x: 220, y: 610 }, // 大分県
+  'JP-45': { x: 220, y: 650 }, // 宮崎県
+  'JP-46': { x: 210, y: 690 }, // 鹿児島県
+  'JP-47': { x: 145, y: 765 }, // 沖縄県
+};
+
 
 const getPrefectureFromAddress = (address) => {
   if (!address) return null;
@@ -101,6 +154,13 @@ function JapanMap({ posts, onPinClick }) {
 
   return (
     <div style={{ width: '100%', height: 'auto' }}>
+       <TransformWrapper
+        initialScale={1}
+        initialPositionX={0}
+        initialPositionY={0}
+      >
+        {/* TransformWrapperの子要素としてTransformComponentを配置 */}
+        <TransformComponent>
       <svg width="500" height="500" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
         <defs>
           {posts.map(post => (
@@ -134,8 +194,34 @@ function JapanMap({ posts, onPinClick }) {
               />
             );
           })}
+
+          {/* ここにピンを配置するロジックを追加 */}
+              {posts.map(post => {
+                const prefectureName = getPrefectureFromAddress(post.address);
+                const prefectureId = PREFECTURE_NAME_TO_ID[prefectureName];
+                const center = PREFECTURE_CENTERS[prefectureId];
+
+                if (center) {
+                  return (
+                    <image
+                      key={`pin-${post.id}`}
+                      href={`http://localhost:3001/uploads/${post.image}`}
+                      x={center.x - 25} // ピンのx座標
+                      y={center.y - 25} // ピンのy座標
+                      width="50"
+                      height="50"
+                      clipPath={`url(#pattern-${post.id})`} // 都道府県の形でくり抜く
+                      onClick={() => onPinClick(post)}
+                      style={{ cursor: 'pointer' }}
+                    />
+                  );
+                }
+                return null;
+              })}
         </g>
       </svg>
+      </TransformComponent>
+      </TransformWrapper>
     </div>
   );
 }

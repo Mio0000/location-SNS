@@ -23,7 +23,6 @@ function App() {
   useEffect(() => {
     localStorage.setItem('likedPosts', JSON.stringify(Array.from(likedPosts)));
   }, [likedPosts]);
-
   const fetchPosts = () => {
     fetch('http://localhost:3001/posts')
       .then(res => res.json())
@@ -61,24 +60,47 @@ function App() {
       } else { throw new Error('いいねに失敗'); }
     } catch { alert('いいねに失敗しました。'); }
   };
+  
+  // コメント投稿用のハンドラを追加
+  const handleCommentSubmit = async (postId, commentText) => {
+    try {
+      const response = await fetch(`http://localhost:3001/posts/${postId}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: commentText }),
+      });
+      if (response.ok) {
+        const updatedPost = await response.json();
+        setPosts(currentPosts => currentPosts.map(p => p.id === postId ? updatedPost : p));
+        setSelectedPost(updatedPost);
+      } else {
+        const result = await response.json();
+        alert(result.message || 'コメント投稿に失敗しました');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('コメント投稿に失敗しました');
+    }
+  };
 
   const handlePinClick = (post) => setSelectedPost(post);
   const handleCloseDetail = () => setSelectedPost(null);
 
-  const handleMapClick = (event) => {
-    const prefectureId = event.target.id;
-    if (prefectureId && prefectureId.startsWith('JP-')) {
-      const prefectureName = ID_TO_PREFECTURE_NAME[prefectureId];
-      const latestPost = [...posts].find(p => getPrefectureFromAddress(p.address) === prefectureName);
-      if (latestPost) setSelectedPost(latestPost);
-    }
-  };
+  // handleMapClickを削除
+  // const handleMapClick = (event) => {
+  //   const prefectureId = event.target.id;
+  //   if (prefectureId && prefectureId.startsWith('JP-')) {
+  //     const prefectureName = ID_TO_PREFECTURE_NAME[prefectureId];
+  //     const latestPost = [...posts].find(p => getPrefectureFromAddress(p.address) === prefectureName);
+  //     if (latestPost) setSelectedPost(latestPost);
+  //   }
+  // };
 
   return (
     <div className="App">
       <header className="App-header"><h1>日本の思い出をシェアしよう！</h1></header>
       <main className="App-main">
-        <div className="map-container" onClick={handleMapClick}>
+        <div className="map-container">
           <JapanMap posts={posts} onPinClick={handlePinClick} />
         </div>
         <div className="sidebar">
@@ -104,7 +126,7 @@ function App() {
         onClose={handleCloseDetail}
         onLike={handleLike}
         isLiked={selectedPost && likedPosts.has(selectedPost.id)}
-        updatePost={setSelectedPost}   // ← コメント投稿後にモーダル更新
+        onCommentSubmit={handleCommentSubmit}
       />
     </div>
   );

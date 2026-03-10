@@ -50,21 +50,21 @@ function PostForm({ onPostSuccess }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ margin: '20px', padding: '20px', border: '1px solid #ccc' }}>
-      <h3>投稿フォーム</h3>
-      <div style={{ marginBottom: '10px' }}>
-        <label>投稿テキスト： </label>
-        <input type="text" value={text} onChange={(e) => setText(e.target.value)} required />
+    <form onSubmit={handleSubmit} className="post-form">
+      <h3>新しい思い出を投稿</h3>
+      <div className="post-form-group">
+        <label>テキスト</label>
+        <input type="text" value={text} onChange={(e) => setText(e.target.value)} placeholder="どんな思い出？" required />
       </div>
-      <div style={{ marginBottom: '10px' }}>
-        <label>住所： </label>
-        <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} required />
+      <div className="post-form-group">
+        <label>住所（都道府県名を含めて入力）</label>
+        <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="例：東京都新宿区" required />
       </div>
-      <div style={{ marginBottom: '10px' }}>
-        <label>写真： </label>
+      <div className="post-form-group">
+        <label>写真</label>
         <input type="file" accept="image/*" onChange={handleImageChange} required />
       </div>
-      <button type="submit">送信</button>
+      <button type="submit" className="post-form-submit">投稿する</button>
     </form>
   );
 }

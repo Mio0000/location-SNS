@@ -1,0 +1,192 @@
+/* オーバーレイ */
+.pref-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: overlayFadeIn 0.2s ease;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* モーダル本体 */
+.pref-modal-content {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 28px 24px 24px;
+  width: 92%;
+  max-width: 540px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+  animation: modalSlideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalSlideUp {
+  from { transform: translateY(40px) scale(0.97); opacity: 0; }
+  to   { transform: translateY(0)    scale(1);    opacity: 1; }
+}
+
+/* タイトル */
+.pref-modal-title {
+  margin: 0 0 20px;
+  font-size: 1.25rem;
+  color: #333;
+  padding-right: 32px;
+}
+
+.pref-no-posts {
+  color: #aaa;
+  text-align: center;
+  padding: 24px 0;
+  font-style: italic;
+}
+
+/* 投稿リスト */
+.pref-post-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 投稿カード */
+.pref-post-card {
+  border: 1px solid #ebebeb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.pref-post-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.pref-post-body {
+  padding: 14px 16px;
+}
+
+.pref-post-text {
+  margin: 0 0 4px;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.pref-post-date {
+  display: block;
+  color: #bbb;
+  font-size: 0.78rem;
+  margin-bottom: 12px;
+}
+
+/* アクションボタン行 */
+.pref-post-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.comment-toggle-btn {
+  padding: 5px 12px;
+  background-color: #fff;
+  color: #555;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+  transition: background-color 0.2s;
+}
+
+.comment-toggle-btn:hover {
+  background-color: #f3f3f3;
+}
+
+/* コメントセクション */
+.pref-comments {
+  margin-top: 14px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 12px;
+}
+
+.pref-comments-list {
+  max-height: 160px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.pref-comment-item {
+  padding: 6px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.pref-comment-item:last-child {
+  border-bottom: none;
+}
+
+.pref-comment-item p {
+  margin: 0 0 2px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.pref-comment-item small {
+  color: #bbb;
+  font-size: 0.75rem;
+}
+
+.pref-no-comments {
+  color: #bbb;
+  font-size: 0.85rem;
+  font-style: italic;
+  margin: 0 0 8px;
+}
+
+/* コメント入力フォーム */
+.pref-comment-form {
+  display: flex;
+  gap: 8px;
+}
+
+.pref-comment-form input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+}
+
+.pref-comment-form input:focus {
+  outline: none;
+  border-color: #a2d7dd;
+}
+
+.pref-comment-form button {
+  padding: 8px 16px;
+  background-color: #a2d7dd;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.pref-comment-form button:hover {
+  background-color: #7bbfc6;
+}

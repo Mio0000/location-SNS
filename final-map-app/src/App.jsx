@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import JapanMap from './JapanMap.jsx';
 import PostForm from './PostForm.jsx';
 import PostDetail from './PostDetail.jsx';
@@ -36,6 +36,10 @@ function App() {
   const [likedPosts, setLikedPosts] = useState(
     () => new Set(JSON.parse(localStorage.getItem('likedPosts')) || [])
   );
+  // シェアリンク: URLパラメータ ?post=ID で投稿を自動オープン
+  const initialPostIdRef = useRef(
+    new URLSearchParams(window.location.search).get('post')
+  );
 
   useEffect(() => {
     localStorage.setItem('likedPosts', JSON.stringify(Array.from(likedPosts)));
@@ -50,15 +54,31 @@ function App() {
 
   useEffect(() => { fetchPosts(); }, []);
 
-  // 都道府県クリック → PrefectureModal
-  const handlePrefectureClick = (prefName) => {
-    setSelectedPrefecture(prefName);
-  };
+  // URLパラメータの投稿を自動オープン
+  useEffect(() => {
+    if (posts.length > 0 && initialPostIdRef.current) {
+      const target = posts.find(p => p.id === initialPostIdRef.current);
+      if (target) {
+        setSelectedPost(target);
+        initialPostIdRef.current = null;
+      }
+    }
+  }, [posts]);
 
+  // 制覇済み都道府県数
+  const visitedPrefCount = useMemo(() => {
+    const visited = new Set();
+    posts.forEach(post => {
+      const pref = getPrefectureFromAddress(post.address);
+      if (pref) visited.add(pref);
+    });
+    return visited.size;
+  }, [posts]);
+
+  const sortedPosts = [...posts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  const handlePrefectureClick = (prefName) => setSelectedPrefecture(prefName);
   const handleClosePrefecture = () => setSelectedPrefecture(null);
-
-  // サイドバー画像クリック → PostDetail
-  const handlePinClick = (post) => setSelectedPost(post);
   const handleCloseDetail = () => setSelectedPost(null);
 
   const handleDelete = async (postId) => {
@@ -70,6 +90,25 @@ function App() {
       } catch {
         alert('投稿の削除に失敗しました。');
       }
+    }
+  };
+
+  const handleEdit = async (postId, updates) => {
+    try {
+      const response = await fetch(`http://localhost:3001/posts/${postId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        setPosts(current => current.map(p => p.id === postId ? result : p));
+        if (selectedPost && selectedPost.id === postId) setSelectedPost(result);
+      } else {
+        alert(result.message || '編集に失敗しました');
+      }
+    } catch {
+      alert('編集に失敗しました');
     }
   };
 
@@ -99,7 +138,6 @@ function App() {
       });
       const result = await response.json();
       if (response.ok) {
-        // バックエンドから返ってきた更新済み投稿でstateを更新
         setPosts(current => current.map(p => p.id === postId ? result.post : p));
         if (selectedPost && selectedPost.id === postId) setSelectedPost(result.post);
       } else {
@@ -110,53 +148,42 @@ function App() {
     }
   };
 
-  // 選択中の都道府県に紐づく投稿
   const prefecturePosts = selectedPrefecture
-    ? posts.filter(p => getPrefectureFromAddress(p.address) === selectedPrefecture)
+    ? sortedPosts.filter(p => getPrefectureFromAddress(p.address) === selectedPrefecture)
     : [];
+
+  const progressPct = Math.round((visitedPrefCount / 47) * 100);
 
   return (
     <div className="App">
-      <header className="App-header"><h1>日本の思い出をシェアしよう！</h1></header>
+      <header className="App-header">
+        <h1 className="App-title">🗾 日本の思い出マップ</h1>
+        <div className="App-progress">
+          <span className="progress-label">
+            {visitedPrefCount} <small>/ 47 都道府県</small>
+          </span>
+          <div className="progress-track">
+            <div className="progress-fill" style={{ width: `${progressPct}%` }} />
+          </div>
+          <span className="progress-pct">{progressPct}%</span>
+        </div>
+      </header>
+
       <main className="App-main">
-        <div className="map-container">
+        <div className="map-panel">
           <JapanMap posts={posts} onPrefectureClick={handlePrefectureClick} />
         </div>
-        <div className="sidebar">
-          <PostForm onPostSuccess={fetchPosts} />
-          <div className="post-list">
-            <h2>投稿一覧</h2>
-            {posts.map(post => (
-              <div key={post.id} className="post-item">
-                <p><strong>{post.address}</strong></p>
-                <p>{post.text}</p>
-                {post.image && (
-                  <img
-                    src={`http://localhost:3001/uploads/${post.image}`}
-                    alt={post.text}
-                    className="post-image"
-                    onClick={() => handlePinClick(post)}
-                  />
-                )}
-                <small className="post-date">
-                  {post.createdAt ? new Date(post.createdAt).toLocaleString('ja-JP') : ''}
-                </small>
-                <div className="post-actions">
-                  <button
-                    className={`like-button ${likedPosts.has(post.id) ? 'liked' : ''}`}
-                    onClick={() => handleLike(post.id)}
-                  >
-                    ❤️ ({post.likes || 0})
-                  </button>
-                  <button onClick={() => handleDelete(post.id)} className="delete-button">削除</button>
-                </div>
-              </div>
-            ))}
+
+        <aside className="form-panel">
+          <div className="form-panel-inner">
+            <p className="form-panel-hint">
+              都道府県をクリックすると投稿が見られるよ！
+            </p>
+            <PostForm onPostSuccess={fetchPosts} />
           </div>
-        </div>
+        </aside>
       </main>
 
-      {/* 都道府県モーダル */}
       <PrefectureModal
         prefectureName={selectedPrefecture}
         posts={prefecturePosts}
@@ -165,15 +192,16 @@ function App() {
         likedPosts={likedPosts}
         onDelete={handleDelete}
         onCommentSubmit={handleCommentSubmit}
+        onEdit={handleEdit}
       />
 
-      {/* サイドバー画像クリック時の詳細モーダル（既存） */}
       <PostDetail
         post={selectedPost}
         onClose={handleCloseDetail}
         onLike={handleLike}
         isLiked={selectedPost && likedPosts.has(selectedPost.id)}
         onCommentSubmit={handleCommentSubmit}
+        onEdit={handleEdit}
       />
     </div>
   );

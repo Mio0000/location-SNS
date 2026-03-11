@@ -55,9 +55,17 @@ router.get('/posts', (req, res) => {
     res.json(posts);
 });
 
+// 特定の投稿を取得（シェアリンク用）
+router.get('/posts/:id', (req, res) => {
+    const posts = loadPosts();
+    const post = posts.find(p => p.id === req.params.id);
+    if (!post) return res.status(404).json({ message: '投稿が見つかりません。' });
+    res.json(post);
+});
+
 // 新しい投稿を追加
 router.post('/posts', upload.single('image'), (req, res) => {
-    const { text, address } = req.body;
+    const { text, address, username } = req.body;
     const image = req.file ? req.file.filename : null;
 
     const posts = loadPosts();
@@ -67,6 +75,7 @@ router.post('/posts', upload.single('image'), (req, res) => {
         address,
         image,
         likes: 0,
+        username: username || '匿名',
         createdAt: new Date().toISOString(),
     };
     posts.unshift(newPost);
@@ -85,6 +94,40 @@ router.post('/posts/:id/like', (req, res) => {
     }
 
     posts[postIndex].likes = (posts[postIndex].likes || 0) + 1;
+    savePosts(posts);
+    res.status(200).json(posts[postIndex]);
+});
+
+// いいね！を取り消し
+router.post('/posts/:id/unlike', (req, res) => {
+    const postId = req.params.id;
+    const posts = loadPosts();
+    const postIndex = posts.findIndex(p => p.id === postId);
+
+    if (postIndex === -1) {
+        return res.status(404).json({ message: '投稿が見つかりません。' });
+    }
+
+    posts[postIndex].likes = Math.max(0, (posts[postIndex].likes || 0) - 1);
+    savePosts(posts);
+    res.status(200).json(posts[postIndex]);
+});
+
+// 投稿を編集
+router.put('/posts/:id', (req, res) => {
+    const postId = req.params.id;
+    const { text, address } = req.body;
+    const posts = loadPosts();
+    const postIndex = posts.findIndex(p => p.id === postId);
+
+    if (postIndex === -1) {
+        return res.status(404).json({ message: '投稿が見つかりません。' });
+    }
+
+    if (text !== undefined) posts[postIndex].text = text;
+    if (address !== undefined) posts[postIndex].address = address;
+    posts[postIndex].updatedAt = new Date().toISOString();
+
     savePosts(posts);
     res.status(200).json(posts[postIndex]);
 });

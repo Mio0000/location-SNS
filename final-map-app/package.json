@@ -12,8 +12,10 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "prop-types": "^15.8.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-simple-maps": "^3.0.0",
     "react-zoom-pan-pinch": "^3.7.0"
   },
   "devDependencies": {

@@ -1,15 +1,29 @@
 import React, { useState } from 'react';
 import './PrefectureModal.css';
 
-function PostCard({ post, onLike, isLiked, onDelete, onCommentSubmit }) {
+function PostCard({ post, onLike, isLiked, onDelete, onCommentSubmit, onEdit }) {
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(post.text || '');
+  const [editAddress, setEditAddress] = useState(post.address || '');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newComment.trim()) return;
     await onCommentSubmit(post.id, newComment);
     setNewComment('');
+  };
+
+  const handleSave = async () => {
+    await onEdit(post.id, { text: editText, address: editAddress });
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditText(post.text || '');
+    setEditAddress(post.address || '');
+    setIsEditing(false);
   };
 
   return (
@@ -22,7 +36,31 @@ function PostCard({ post, onLike, isLiked, onDelete, onCommentSubmit }) {
         />
       )}
       <div className="pref-post-body">
-        <p className="pref-post-text">{post.text}</p>
+        {isEditing ? (
+          <div className="pref-edit-form">
+            <input
+              type="text"
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              placeholder="テキスト"
+            />
+            <input
+              type="text"
+              value={editAddress}
+              onChange={(e) => setEditAddress(e.target.value)}
+              placeholder="住所"
+            />
+            <div className="pref-edit-actions">
+              <button className="pref-save-btn" onClick={handleSave}>保存</button>
+              <button className="pref-cancel-btn" onClick={handleCancelEdit}>キャンセル</button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <p className="pref-post-text">{post.text}</p>
+            <span className="pref-post-username">👤 {post.username || '匿名'}</span>
+          </>
+        )}
         <small className="pref-post-date">
           {post.createdAt ? new Date(post.createdAt).toLocaleString('ja-JP') : ''}
         </small>
@@ -38,6 +76,9 @@ function PostCard({ post, onLike, isLiked, onDelete, onCommentSubmit }) {
             onClick={() => setShowComments(v => !v)}
           >
             💬 {showComments ? '閉じる' : `コメント (${(post.comments || []).length})`}
+          </button>
+          <button className="pref-edit-btn" onClick={() => setIsEditing(true)}>
+            ✏️ 編集
           </button>
           <button className="delete-button" onClick={() => onDelete(post.id)}>
             削除
@@ -74,7 +115,7 @@ function PostCard({ post, onLike, isLiked, onDelete, onCommentSubmit }) {
   );
 }
 
-function PrefectureModal({ prefectureName, posts, onClose, onLike, likedPosts, onDelete, onCommentSubmit }) {
+function PrefectureModal({ prefectureName, posts, onClose, onLike, likedPosts, onDelete, onCommentSubmit, onEdit }) {
   if (!prefectureName) return null;
 
   return (
@@ -95,6 +136,7 @@ function PrefectureModal({ prefectureName, posts, onClose, onLike, likedPosts, o
                 isLiked={likedPosts.has(post.id)}
                 onDelete={onDelete}
                 onCommentSubmit={onCommentSubmit}
+                onEdit={onEdit}
               />
             ))}
           </div>

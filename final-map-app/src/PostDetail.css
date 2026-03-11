@@ -115,3 +115,90 @@
 .comment-form button:hover {
   opacity: 0.9;
 }
+
+.modal-username {
+  font-size: 0.85rem;
+  color: #999;
+  margin: 0 0 8px;
+}
+.modal-edit-form { margin-top: 10px; }
+.modal-edit-form input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #a2d7dd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  box-sizing: border-box;
+}
+.modal-edit-actions { display: flex; gap: 8px; margin-top: 4px; }
+
+/* シェアダイアログ */
+.post-detail-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+.share-dialog {
+  background: #f0fafc;
+  border: 1px solid #a2d7dd;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 8px 0 12px;
+}
+.share-dialog-label {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #0077aa;
+  margin: 0 0 8px;
+}
+.share-url-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.share-url-input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #a2d7dd;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #555;
+  background: white;
+}
+.copy-btn {
+  padding: 6px 12px;
+  background: #a2d7dd;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.copy-btn.copied { background: #4caf50; }
+.copy-btn:hover { opacity: 0.85; }
+.line-share-btn {
+  width: 100%;
+  padding: 9px;
+  background: #06c755;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  transition: opacity 0.2s;
+}
+.line-share-btn:hover { opacity: 0.85; }
+.share-note {
+  font-size: 0.72rem;
+  color: #888;
+  margin: 0;
+  line-height: 1.5;
+}

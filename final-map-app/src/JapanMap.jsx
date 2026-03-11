@@ -1,55 +1,8 @@
-import React from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 
-const JAPAN_MAP_PATHS = {
-  'JP-01': 'M513,11L481,25L456,23L441,31L439,49L425,52L446,73L432,102L456,123L479,121L514,142L540,119L569,112L569,88L538,59L529,32z',
-  'JP-02': 'M473,158L456,177L452,203L481,207L481,180z',
-  'JP-03': 'M485,178L485,208L501,234L486,252L488,271L474,271L473,212z',
-  'JP-04': 'M489,274L476,275L478,317L492,317z',
-  'JP-05': 'M451,214L435,232L436,264L452,284L468,269L467,233z',
-  'JP-06': 'M453,288L437,300L448,333L468,321L469,286z',
-  'JP-07': 'M470,324L450,336L452,360L493,353L491,320z',
-  'JP-08': 'M495,356L514,359L511,382L495,383z',
-  'JP-09': 'M470,356L492,355L493,383L469,383z',
-  'JP-10': 'M449,338L432,349L426,373L451,358z',
-  'JP-11': 'M468,362L454,374L467,392L484,385z',
-  'JP-12': 'M496,386L496,404L513,410L510,385z',
-  'JP-13': 'M486,388L469,395L473,411L494,403z',
-  'JP-14': 'M474,414L453,423L468,443L488,432z',
-  'JP-15': 'M424,310L400,320L405,355L425,375L446,334z',
-  'JP-16': 'M398,357L378,367L385,392L402,388z',
-  'JP-17': 'M376,368L351,378L361,408L382,391z',
-  'JP-18': 'M359,410L338,421L355,448L378,433z',
-  'JP-19': 'M450,393L434,405L435,429L450,422z',
-  'JP-20': 'M424,378L401,390L412,423L432,431L448,390z',
-  'JP-21': 'M399,392L380,418L410,422L409,393z',
-  'JP-22': 'M451,425L425,438L429,463L452,475L466,442z',
-  'JP-23': 'M423,439L396,456L408,482L427,477z',
-  'JP-24': 'M381,468L359,481L380,504L406,484z',
-  'JP-25': 'M379,420L357,450L380,465L394,453z',
-  'JP-26': 'M355,452L331,465L356,478L377,463z',
-  'JP-27': 'M329,493L309,513L331,512L352,492z',
-  'JP-28': 'M329,466L301,481L308,511L330,511L354,490z',
-  'JP-29': 'M354,480L332,492L357,502L378,485z',
-  'JP-30': 'M330,514L307,522L332,544L355,505z',
-  'JP-31': 'M299,455L270,466L275,492L300,479z',
-  'JP-32': 'M268,468L240,480L247,510L273,494z',
-  'JP-33': 'M299,483L273,495L280,520L305,509z',
-  'JP-34': 'M271,497L243,512L254,538L278,519z',
-  'JP-35': 'M238,514L210,525L226,558L252,537z',
-  'JP-36': 'M307,533L287,542L296,561L316,550z',
-  'JP-37': 'M303,512L282,522L288,540L308,531z',
-  'JP-38': 'M280,542L258,552L268,574L294,560z',
-  'JP-39': 'M285,563L262,575L276,596L297,581z',
-  'JP-40': 'M224,560L196,570L208,600L234,588L248,560z',
-  'JP-41': 'M194,572L178,588L193,612L206,599z',
-  'JP-42': 'M176,590L150,602L168,634L191,611z',
-  'JP-43': 'M208,604L184,620L200,645L220,627z',
-  'JP-44': 'M236,590L210,602L222,628L245,614z',
-  'JP-45': 'M224,630L202,647L218,672L240,655z',
-  'JP-46': 'M216,674L192,690L213,715L238,695L238,670z',
-  'JP-47': 'M150,750L130,760L140,780L160,770z',
-};
+const GEO_URL = "https://raw.githubusercontent.com/dataofjapan/land/master/japan.topojson";
 
 const PREFECTURE_NAME_TO_ID = {
   '北海道': 'JP-01', '青森県': 'JP-02', '岩手県': 'JP-03', '宮城県': 'JP-04',
@@ -74,12 +27,40 @@ const getPrefectureFromAddress = (address) => {
   return null;
 };
 
+// GeoJSON Feature から重心座標 [lng, lat] を計算
+const getFeatureCentroid = (geo) => {
+  const { geometry } = geo;
+  let ring;
+  if (geometry.type === 'Polygon') {
+    ring = geometry.coordinates[0];
+  } else if (geometry.type === 'MultiPolygon') {
+    // 最大ポリゴンを選択
+    ring = geometry.coordinates.reduce((a, b) =>
+      a[0].length > b[0].length ? a : b
+    )[0];
+  }
+  if (!ring || ring.length === 0) return [137, 37];
+  return [
+    ring.reduce((s, c) => s + c[0], 0) / ring.length,
+    ring.reduce((s, c) => s + c[1], 0) / ring.length,
+  ];
+};
+
+// ズーム時のピンオフセット（経度・緯度）
+const PIN_GEO_OFFSETS = [
+  [-0.4, 0.3], [0, 0.3], [0.4, 0.3],
+  [-0.4, -0.3], [0, -0.3], [0.4, -0.3],
+];
+
 function JapanMap({ posts, onPrefectureClick }) {
-  // 都道府県ごとに「いいね最多の投稿」を選ぶ（画像ありを優先）
-  const topPostByPrefecture = React.useMemo(() => {
+  const transformRef = useRef(null);
+  const [zoomedPrefId, setZoomedPrefId] = useState(null);
+  const centroidsRef = useRef({});
+
+  const topPostByPrefecture = useMemo(() => {
     const map = new Map();
     posts.forEach(post => {
-      if (!post.image) return; // 塗りつぶしは画像ありのみ
+      if (!post.image) return;
       const prefName = getPrefectureFromAddress(post.address);
       if (!prefName) return;
       const prefId = PREFECTURE_NAME_TO_ID[prefName];
@@ -91,11 +72,62 @@ function JapanMap({ posts, onPrefectureClick }) {
     return map;
   }, [posts]);
 
+  const postCountByPrefecture = useMemo(() => {
+    const counts = new Map();
+    posts.forEach(post => {
+      const prefName = getPrefectureFromAddress(post.address);
+      if (!prefName) return;
+      const prefId = PREFECTURE_NAME_TO_ID[prefName];
+      counts.set(prefId, (counts.get(prefId) || 0) + 1);
+    });
+    return counts;
+  }, [posts]);
+
+  const zoomedPrefName = zoomedPrefId
+    ? Object.entries(PREFECTURE_NAME_TO_ID).find(([, id]) => id === zoomedPrefId)?.[0]
+    : null;
+  const postsInZoomed = zoomedPrefName
+    ? posts.filter(p => getPrefectureFromAddress(p.address) === zoomedPrefName)
+    : [];
+
+  const handlePrefClick = (prefName, prefId) => {
+    setZoomedPrefId(prefId);
+    onPrefectureClick(prefName);
+    setTimeout(() => {
+      if (transformRef.current) {
+        const el = document.getElementById(prefId);
+        if (el) transformRef.current.zoomToElement(el, undefined, 400, 'easeOut');
+      }
+    }, 50);
+  };
+
+  const handleReset = () => {
+    setZoomedPrefId(null);
+    if (transformRef.current) transformRef.current.resetTransform(400);
+  };
+
   return (
-    <div style={{ width: '100%', height: 'auto' }}>
-      <TransformWrapper initialScale={1} initialPositionX={0} initialPositionY={0}>
+    <div style={{ position: 'relative', width: '100%', height: 'auto' }}>
+      {zoomedPrefId && (
+        <button className="map-reset-btn" onClick={handleReset}>
+          ← 地図に戻る
+        </button>
+      )}
+      <TransformWrapper
+        ref={transformRef}
+        initialScale={1}
+        minScale={0.5}
+        maxScale={20}
+        centerOnInit
+      >
         <TransformComponent>
-          <svg width="500" height="500" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+          <ComposableMap
+            projection="geoMercator"
+            projectionConfig={{ center: [137, 38], scale: 1600 }}
+            width={900}
+            height={1000}
+            style={{ width: '100%', height: '100%', maxHeight: 'calc(100vh - 56px)' }}
+          >
             <defs>
               {Array.from(topPostByPrefecture.entries()).map(([prefId, post]) => (
                 <pattern
@@ -115,22 +147,74 @@ function JapanMap({ posts, onPrefectureClick }) {
                 </pattern>
               ))}
             </defs>
-            <g id="japan">
-              {Object.entries(PREFECTURE_NAME_TO_ID).map(([prefName, prefId]) => {
-                const post = topPostByPrefecture.get(prefId);
-                return (
-                  <path
-                    key={prefId}
-                    id={prefId}
-                    d={JAPAN_MAP_PATHS[prefId]}
-                    fill={post ? `url(#pattern-${prefId})` : '#a2d7dd'}
-                    style={{ stroke: 'white', strokeWidth: 2, cursor: 'pointer' }}
-                    onClick={() => onPrefectureClick(prefName)}
-                  />
-                );
-              })}
-            </g>
-          </svg>
+
+            <Geographies geography={GEO_URL}>
+              {({ geographies }) =>
+                geographies.map(geo => {
+                  const prefId = `JP-${String(geo.properties.id).padStart(2, '0')}`;
+                  const prefName = Object.entries(PREFECTURE_NAME_TO_ID)
+                    .find(([, id]) => id === prefId)?.[0];
+                  if (!prefName) return null;
+
+                  const centroid = getFeatureCentroid(geo);
+                  centroidsRef.current[prefId] = centroid;
+
+                  const post = topPostByPrefecture.get(prefId);
+                  const count = postCountByPrefecture.get(prefId);
+
+                  return (
+                    <React.Fragment key={geo.rsmKey}>
+                      <Geography
+                        id={prefId}
+                        geography={geo}
+                        fill={post ? `url(#pattern-${prefId})` : '#dce8ec'}
+                        stroke="white"
+                        strokeWidth={0.8}
+                        onClick={() => handlePrefClick(prefName, prefId)}
+                        style={{
+                          default: { outline: 'none', cursor: 'pointer' },
+                          hover: {
+                            outline: 'none',
+                            cursor: 'pointer',
+                            filter: 'brightness(1.18) drop-shadow(0 0 5px rgba(44,143,160,0.55))',
+                          },
+                          pressed: { outline: 'none', filter: 'brightness(0.9)' },
+                        }}
+                      />
+                      {count && (
+                        <Marker coordinates={centroid}>
+                          <circle r={9} fill="rgba(255,255,255,0.92)" stroke="#a2d7dd" strokeWidth={1.5} />
+                          <text
+                            textAnchor="middle"
+                            dominantBaseline="central"
+                            fontSize={9}
+                            fontWeight="bold"
+                            fill="#0077aa"
+                          >
+                            {count}
+                          </text>
+                        </Marker>
+                      )}
+                    </React.Fragment>
+                  );
+                })
+              }
+            </Geographies>
+
+            {/* ズーム時の投稿ピン */}
+            {zoomedPrefId && postsInZoomed.slice(0, 6).map((post, i) => {
+              const base = centroidsRef.current[zoomedPrefId] || [137, 37];
+              const [dlng, dlat] = PIN_GEO_OFFSETS[i] || [0, 0];
+              return (
+                <Marker key={`pin-${post.id}`} coordinates={[base[0] + dlng, base[1] + dlat]}>
+                  <circle r={5} fill="#ff5252" stroke="white" strokeWidth={1.5} />
+                  <text y={12} textAnchor="middle" fontSize={7} fill="#333">
+                    {(post.username || '匿名').slice(0, 3)}
+                  </text>
+                </Marker>
+              );
+            })}
+          </ComposableMap>
         </TransformComponent>
       </TransformWrapper>
     </div>

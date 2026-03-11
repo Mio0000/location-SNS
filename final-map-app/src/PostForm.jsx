@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 function PostForm({ onPostSuccess }) {
+  const [username, setUsername] = useState('');
   const [text, setText] = useState('');
   const [address, setAddress] = useState('');
   const [image, setImage] = useState(null);
@@ -14,6 +15,7 @@ function PostForm({ onPostSuccess }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData();
+    formData.append('username', username);
     formData.append('text', text);
     formData.append('address', address);
     if (image) {
@@ -35,6 +37,7 @@ function PostForm({ onPostSuccess }) {
         onPostSuccess();
         
         // フォームの状態をクリア
+        setUsername('');
         setText('');
         setAddress('');
         setImage(null);
@@ -52,6 +55,10 @@ function PostForm({ onPostSuccess }) {
   return (
     <form onSubmit={handleSubmit} className="post-form">
       <h3>新しい思い出を投稿</h3>
+      <div className="post-form-group">
+        <label>ニックネーム</label>
+        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="あなたの名前" />
+      </div>
       <div className="post-form-group">
         <label>テキスト</label>
         <input type="text" value={text} onChange={(e) => setText(e.target.value)} placeholder="どんな思い出？" required />

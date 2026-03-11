@@ -190,3 +190,55 @@
 .pref-comment-form button:hover {
   background-color: #7bbfc6;
 }
+
+/* ユーザー名 */
+.pref-post-username {
+  font-size: 0.8rem;
+  color: #999;
+  margin: 2px 0 8px;
+  display: block;
+}
+/* 編集ボタン */
+.pref-edit-btn {
+  padding: 5px 12px;
+  background-color: white;
+  color: #1976d2;
+  border: 1px solid #90caf9;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.82rem;
+  transition: background-color 0.2s;
+}
+.pref-edit-btn:hover { background-color: #e3f2fd; }
+/* インライン編集 */
+.pref-edit-form { margin-top: 10px; }
+.pref-edit-form input {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid #a2d7dd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  box-sizing: border-box;
+}
+.pref-edit-actions { display: flex; gap: 8px; }
+.pref-save-btn {
+  padding: 6px 16px;
+  background-color: #a2d7dd;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.88rem;
+}
+.pref-cancel-btn {
+  padding: 6px 14px;
+  background-color: white;
+  color: #888;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.88rem;
+}

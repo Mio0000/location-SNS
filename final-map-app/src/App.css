@@ -1,138 +1,158 @@
-/* アプリ全体のレイアウト */
+/* ===== リセット & ルート ===== */
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --header-h: 56px;
+  --form-w: 300px;
+  --sea-color: #d0eaf3;
+  --accent: #2c8fa0;
+  --accent-light: #a2d7dd;
+}
+
+body { margin: 0; font-family: -apple-system, 'Helvetica Neue', sans-serif; }
+
+/* ===== アプリ全体 ===== */
 .App {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--sea-color);
 }
 
+/* ===== ヘッダー ===== */
 .App-header {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-bottom: 1px solid #dee2e6;
-  margin-bottom: 20px;
-}
-
-.App-main {
+  flex: 0 0 var(--header-h);
+  height: var(--header-h);
   display: flex;
-  justify-content: center;
-  gap: 30px; /* 地図とサイドバーの間隔 */
-  padding: 20px;
-  align-items: flex-start;
-  flex-wrap: wrap; /* 画面が狭い時に折り返す */
-}
-
-/* 地図のコンテナ */
-.map-container {
-  position: relative;
-  width: 60%;
-  max-width: 600px;
-}
-
-/* サイドバー（フォームと投稿一覧） */
-.sidebar {
-  width: 35%;
-  max-width: 400px;
-  min-width: 300px; /* 最小幅 */
-}
-
-/* 投稿一覧 */
-.post-list {
-  margin-top: 20px;
-  text-align: left;
-}
-
-.post-item {
-  border: 1px solid #eee;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.post-image {
-  width: 100%;
-  height: auto;
-  border-radius: 5px;
-  margin-top: 10px;
-  cursor: pointer;
-}
-
-/* いいねボタンと削除ボタンのエリア */
-.post-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
   align-items: center;
-}
-
-.like-button {
-  padding: 5px 12px;
-  background-color: white;
-  color: black;
-  border: 1px solid #f8bbd0;
-  border-radius: 20px; /* 丸みをつける */
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s;
-}
-
-.like-button:hover {
-  background-color: #f8bbd0;
-}
-
-.delete-button {
-  padding: 5px 12px;
-  background-color: white;
-  color: #c62828;
-  border: 1px solid #ef9a9a;
-  border-radius: 20px; /* 丸みをつける */
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s;
-}
-
-.delete-button:hover {
-  background-color: #ef9a9a;
-}
-
-/* ... (前のCSSはそのまま) ... */
-
-/* ★★★ この部分を追加！ ★★★ */
-.like-button.liked {
-  background-color: #c2185b;
+  gap: 20px;
+  padding: 0 24px;
+  background: linear-gradient(135deg, #1a5f6e 0%, var(--accent) 100%);
   color: white;
-  border-color: #c2185b;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  z-index: 10;
 }
 
-/* 投稿日時 */
-.post-date {
-  display: block;
-  color: #999;
+.App-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* ===== プログレスバー ===== */
+.App-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.progress-label {
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.progress-label small {
+  font-size: 0.7rem;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.progress-track {
+  flex: 1;
+  height: 8px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 99px;
+  overflow: hidden;
+  min-width: 60px;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffe066, #ffb347);
+  border-radius: 99px;
+  transition: width 0.6s ease;
+}
+.progress-pct {
+  font-size: 0.8rem;
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+/* ===== メインレイアウト（2カラム） ===== */
+.App-main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ===== 左パネル: 地図 ===== */
+.map-panel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  /* 海の色のグラデーション背景 */
+  background: radial-gradient(ellipse at 40% 50%, #b8dff0 0%, var(--sea-color) 60%, #a8cfe8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== 右パネル: フォーム ===== */
+.form-panel {
+  flex: 0 0 var(--form-w);
+  width: var(--form-w);
+  overflow-y: auto;
+  background: #ffffff;
+  border-left: 1px solid #d0d9e0;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.08);
+}
+
+.form-panel-inner {
+  padding: 20px 18px;
+}
+
+.form-panel-hint {
   font-size: 0.78rem;
-  margin-top: 6px;
+  color: #888;
+  text-align: center;
+  margin: 0 0 16px;
+  padding: 8px 12px;
+  background: #f0fafc;
+  border-radius: 8px;
+  border: 1px solid #d4eff3;
+  line-height: 1.5;
 }
 
-/* 投稿フォーム */
+/* ===== 投稿フォーム ===== */
 .post-form {
-  background-color: #fff;
-  border: 1px solid #dee2e6;
-  border-radius: 10px;
-  padding: 20px 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
 
 .post-form h3 {
-  margin: 0 0 16px;
-  font-size: 1rem;
+  margin: 0 0 14px;
+  font-size: 0.95rem;
   color: #333;
+  font-weight: 700;
 }
 
 .post-form-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .post-form-group label {
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: bold;
   color: #555;
   margin-bottom: 4px;
@@ -140,32 +160,150 @@
 
 .post-form-group input[type="text"],
 .post-form-group input[type="file"] {
-  padding: 8px 10px;
+  padding: 7px 9px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   transition: border-color 0.2s;
 }
 
 .post-form-group input[type="text"]:focus {
   outline: none;
-  border-color: #a2d7dd;
+  border-color: var(--accent-light);
 }
 
 .post-form-submit {
   width: 100%;
   padding: 10px;
-  background-color: #a2d7dd;
+  background: linear-gradient(135deg, var(--accent) 0%, #4db6ac 100%);
   color: #fff;
   border: none;
-  border-radius: 6px;
-  font-size: 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
   font-weight: bold;
   cursor: pointer;
+  transition: opacity 0.2s;
+  margin-top: 6px;
+}
+.post-form-submit:hover { opacity: 0.85; }
+
+/* ===== 共通ボタン ===== */
+.like-button {
+  padding: 5px 12px;
+  background-color: white;
+  color: black;
+  border: 1px solid #f8bbd0;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
   transition: background-color 0.2s;
-  margin-top: 4px;
+}
+.like-button:hover { background-color: #f8bbd0; }
+.like-button.liked {
+  background-color: #c2185b;
+  color: white;
+  border-color: #c2185b;
 }
 
-.post-form-submit:hover {
-  background-color: #7bbfc6;
+.delete-button {
+  padding: 5px 12px;
+  background-color: white;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+  transition: background-color 0.2s;
+}
+.delete-button:hover { background-color: #ef9a9a; }
+
+.edit-button {
+  padding: 5px 12px;
+  background-color: white;
+  color: #1976d2;
+  border: 1px solid #90caf9;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+  transition: background-color 0.2s;
+}
+.edit-button:hover { background-color: #e3f2fd; }
+
+.save-button {
+  padding: 5px 14px;
+  background-color: var(--accent-light);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+.cancel-button {
+  padding: 5px 14px;
+  background-color: white;
+  color: #888;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+/* ===== シェアボタン ===== */
+.share-button {
+  padding: 5px 12px;
+  background-color: white;
+  color: #0077aa;
+  border: 1px solid var(--accent-light);
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+.share-button:hover { background-color: #e0f5f8; }
+.share-button.copied { background-color: #4caf50; color: white; border-color: #4caf50; }
+
+/* ===== 地図リセットボタン ===== */
+.map-reset-btn {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  padding: 7px 16px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid var(--accent-light);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #555;
+  font-weight: bold;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  backdrop-filter: blur(4px);
+}
+.map-reset-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+
+/* ===== モバイル対応 ===== */
+@media (max-width: 768px) {
+  .App { height: auto; overflow: visible; }
+  .App-main { flex-direction: column; overflow: visible; }
+  .App-header { flex-wrap: wrap; height: auto; padding: 10px 16px; gap: 10px; }
+  .App-progress { min-width: 100%; }
+
+  .map-panel {
+    height: 70vw;
+    min-height: 280px;
+    max-height: 500px;
+  }
+
+  .form-panel {
+    width: 100%;
+    flex: none;
+    border-left: none;
+    border-top: 1px solid #d0d9e0;
+  }
 }

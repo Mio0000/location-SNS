@@ -193,6 +193,7 @@ function App() {
         onDelete={handleDelete}
         onCommentSubmit={handleCommentSubmit}
         onEdit={handleEdit}
+        onPostClick={setSelectedPost}
       />
 
       <PostDetail

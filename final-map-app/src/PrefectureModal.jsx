@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './PrefectureModal.css';
 
-function PostCard({ post, onLike, isLiked, onDelete, onCommentSubmit, onEdit }) {
+function PostCard({ post, onLike, isLiked, onDelete, onCommentSubmit, onEdit, onPostClick }) {
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -33,6 +33,8 @@ function PostCard({ post, onLike, isLiked, onDelete, onCommentSubmit, onEdit }) 
           src={`http://localhost:3001/uploads/${post.image}`}
           alt={post.text}
           className="pref-post-image"
+          style={{ cursor: 'pointer' }}
+          onClick={() => onPostClick && onPostClick(post)}
         />
       )}
       <div className="pref-post-body">
@@ -115,7 +117,7 @@ function PostCard({ post, onLike, isLiked, onDelete, onCommentSubmit, onEdit }) 
   );
 }
 
-function PrefectureModal({ prefectureName, posts, onClose, onLike, likedPosts, onDelete, onCommentSubmit, onEdit }) {
+function PrefectureModal({ prefectureName, posts, onClose, onLike, likedPosts, onDelete, onCommentSubmit, onEdit, onPostClick }) {
   if (!prefectureName) return null;
 
   return (
@@ -137,6 +139,7 @@ function PrefectureModal({ prefectureName, posts, onClose, onLike, likedPosts, o
                 onDelete={onDelete}
                 onCommentSubmit={onCommentSubmit}
                 onEdit={onEdit}
+                onPostClick={onPostClick}
               />
             ))}
           </div>
